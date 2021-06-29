@@ -20,6 +20,7 @@ public class Tweet {
     public String body;
     public String createdAt;
     public User user;
+    public List<String> imageUrls;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -36,6 +37,23 @@ public class Tweet {
         tweet.createdAt = jsonObject.getString("created_at");
         tweet.createdAt = tweet.getRelativeTimeAgo(tweet.createdAt);
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+
+        tweet.imageUrls = new ArrayList<>();
+
+        // extract photo urls, if any, from json
+        JSONObject entities = jsonObject.getJSONObject("entities");
+
+        // entities only has one image url -- may add multiple photos later so imageUrls is an array instead of just one string
+        // note that many embeds are simply not going to work this way as it only fetches natively uploaded twitter photos, and even then
+        // sometimes these are not counted as embedded uploads (some twitter accounts use t.co manually, which is odd but prevents
+        // it from showing up in the API call)
+        if (entities.has("media")) {
+            JSONArray media = entities.getJSONArray("media");
+                if (media.getJSONObject(0).getString("type").equals("photo")) {
+                    tweet.imageUrls.add(media.getJSONObject(0).getString("media_url_https"));
+                }
+            }
+
         return tweet;
     }
 

@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import org.jetbrains.annotations.NotNull;
@@ -57,6 +58,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfileImage;
+        ImageView ivMediaImage;
         TextView tvBody;
         TextView tvScreenName;
         TextView tvTimePosted;
@@ -64,6 +66,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
+            ivMediaImage = itemView.findViewById(R.id.ivMediaImage);
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             tvTimePosted = itemView.findViewById(R.id.tvTimePosted);
@@ -76,7 +79,28 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvTimePosted.setText(tweet.createdAt);
             Glide.with(context)
                     .load(tweet.user.publicImageUrl)
+                    .transform(new RoundedCorners(15))
                     .into(ivProfileImage);
+            if (tweet.imageUrls.size() != 0) {
+                Glide.with(context)
+                        .load(tweet.imageUrls.get(0))
+                        .centerCrop()
+                        .placeholder(R.drawable.placeholder_twit)
+                        .into(ivMediaImage);
+            } else {
+                ivMediaImage.getLayoutParams().height = 0;
+                ivMediaImage.setVisibility(View.INVISIBLE);
+            }
         }
+    }
+
+    public void clear() {
+        tweets.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Tweet> list) {
+        tweets.addAll(list);
+        notifyDataSetChanged();
     }
 }
