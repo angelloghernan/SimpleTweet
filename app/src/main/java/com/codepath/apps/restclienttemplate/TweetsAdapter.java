@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,14 +83,14 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                     .transform(new RoundedCorners(15))
                     .into(ivProfileImage);
             if (tweet.imageUrls.size() != 0) {
+                ivMediaImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
                         .load(tweet.imageUrls.get(0))
-                        .centerCrop()
+                        .fitCenter()
                         .placeholder(R.drawable.placeholder_twit)
                         .into(ivMediaImage);
             } else {
-                ivMediaImage.getLayoutParams().height = 0;
-                ivMediaImage.setVisibility(View.INVISIBLE);
+                ivMediaImage.setVisibility(View.GONE);
             }
         }
     }
