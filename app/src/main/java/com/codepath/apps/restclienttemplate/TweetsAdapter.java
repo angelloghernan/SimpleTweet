@@ -1,6 +1,7 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 
 import org.jetbrains.annotations.NotNull;
+import org.parceler.Parcels;
 
 import java.util.List;
 
@@ -49,15 +51,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     public int getItemCount() {
         return tweets.size();
     }
-    // Pass in the context and list of tweets
 
-    // For each row, inflate the layout
-
-    // Bind values based on the position of the element
-
-    // Define a viewholder
-
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView ivProfileImage;
         ImageView ivMediaImage;
         TextView tvBody;
@@ -71,6 +66,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody = itemView.findViewById(R.id.tvBody);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             tvTimePosted = itemView.findViewById(R.id.tvTimePosted);
+            itemView.setOnClickListener(this);
 
         }
 
@@ -80,17 +76,30 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvTimePosted.setText(tweet.createdAt);
             Glide.with(context)
                     .load(tweet.user.publicImageUrl)
-                    .transform(new RoundedCorners(15))
+                    .circleCrop()
                     .into(ivProfileImage);
             if (tweet.imageUrls.size() != 0) {
                 ivMediaImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
                         .load(tweet.imageUrls.get(0))
                         .fitCenter()
+                        .transform(new RoundedCorners(10))
                         .placeholder(R.drawable.placeholder_twit)
                         .into(ivMediaImage);
             } else {
                 ivMediaImage.setVisibility(View.GONE);
+            }
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+
+            if (position != RecyclerView.NO_POSITION) {
+                Tweet tweet = tweets.get(position);
+                Intent intent = new Intent(context, TweetDetailsActivity.class);
+                intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+                context.startActivity(intent);
             }
         }
     }
