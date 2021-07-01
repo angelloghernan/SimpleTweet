@@ -101,8 +101,8 @@
             android:background="@null"
             android:backgroundTint="#00FFFFFF"
             android:scaleType="fitStart"
-            android:tint="@color/medium_gray_50"
-            app:srcCompat="@drawable/ic_vector_heart_stroke" />
+            android:tint="@color/heart_selector"
+            app:srcCompat="@drawable/twitter_like" />
 
         <ImageButton
             android:id="@+id/ibRetweet"

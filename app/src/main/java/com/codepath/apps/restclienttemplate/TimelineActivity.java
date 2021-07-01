@@ -12,8 +12,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Toast;
 
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
@@ -32,6 +30,7 @@ public class TimelineActivity extends AppCompatActivity {
 
     public static final String TAG = "TimelineActivity";
     public static final int REQUEST_CODE = 20;
+    public static final int DETAILS_REQUEST_CODE = 30;
 
     private SwipeRefreshLayout srlTimelineRefresh;
 
@@ -65,7 +64,7 @@ public class TimelineActivity extends AppCompatActivity {
         rvTweets = findViewById(R.id.rvTweets);
         // Init list of tweets and adapter
         tweets = new ArrayList<>();
-        adapter = new TweetsAdapter(this, tweets);
+        adapter = new TweetsAdapter(this, tweets, client, callback);
         // Set up recycler view: layout manager and adapter
         rvTweets.setLayoutManager(new LinearLayoutManager(this));
         rvTweets.setAdapter(adapter);
@@ -89,19 +88,41 @@ public class TimelineActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // When adapter is clicked, call this so we can start the details activity and get a result.
+    // Needed so that we can tell if the tweet was liked/unliked, retweeted/unretweeted in the details activity
+    TweetsAdapter.AdapterCallback callback = new TweetsAdapter.AdapterCallback() {
+        @Override
+        public void onAdapterSelected(int pos, Tweet tweet) {
+            Intent intent = new Intent(getApplicationContext(),
+                    TweetDetailsActivity.class);
+            intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
+            intent.putExtra("position", pos);
+            startActivityForResult(intent, DETAILS_REQUEST_CODE);
+        }
+    };
+
     // On compose intent finish
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
             // Get tweet from compose intent, and add to recycler view by adding to dataset and notifying adapter
+            assert data != null;
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
             tweets.add(0, tweet);
             adapter.notifyDataSetChanged();
             // Scroll to new published tweet
             rvTweets.smoothScrollToPosition(0);
+        } if (requestCode == DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
+            assert data != null;
+            Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
+            int pos = data.getIntExtra("position", 0);
+            tweets.set(pos, tweet);
+            adapter.notifyDataSetChanged();
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
 
     private void populateHomeTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {

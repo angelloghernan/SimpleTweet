@@ -9,7 +9,7 @@
     tools:context=".TweetDetailsActivity">
 
     <ImageButton
-        android:id="@+id/ibReply3"
+        android:id="@+id/ibDetailsReply"
         android:layout_width="100dp"
         android:layout_height="25dp"
         android:layout_below="@+id/vTweetDivider3"
@@ -23,13 +23,13 @@
         app:srcCompat="@android:drawable/sym_action_chat" />
 
     <ImageButton
-        android:id="@+id/ibReply5"
+        android:id="@+id/ibDetailsRetweet"
         android:layout_width="100dp"
         android:layout_height="25dp"
         android:layout_below="@+id/vTweetDivider3"
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/ibReply3"
+        android:layout_toEndOf="@+id/ibDetailsReply"
         android:background="@null"
         android:backgroundTint="#00FFFFFF"
         android:scaleType="fitCenter"
@@ -37,18 +37,18 @@
         app:srcCompat="@drawable/ic_vector_retweet_stroke" />
 
     <ImageButton
-        android:id="@+id/ibReply6"
+        android:id="@+id/ibDetailsLike"
         android:layout_width="100dp"
         android:layout_height="25dp"
         android:layout_below="@+id/vTweetDivider3"
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
-        android:layout_toEndOf="@+id/ibReply5"
+        android:layout_toEndOf="@+id/ibDetailsRetweet"
         android:background="@null"
         android:backgroundTint="#00FFFFFF"
         android:scaleType="fitCenter"
-        android:tint="@color/medium_gray"
-        app:srcCompat="@drawable/ic_vector_heart_stroke" />
+        android:tint="@color/heart_selector"
+        app:srcCompat="@drawable/twitter_like" />
 
     <ImageView
         android:id="@+id/ivDetailsProfile"
@@ -215,7 +215,7 @@
         android:id="@+id/vTweetDivider4"
         android:layout_width="match_parent"
         android:layout_height="2dp"
-        android:layout_below="@+id/ibReply3"
+        android:layout_below="@+id/ibDetailsReply"
         android:layout_alignStart="@+id/ivDetailsProfile"
         android:layout_alignEnd="@+id/ivDetailsImage2"
         android:layout_alignParentStart="true"

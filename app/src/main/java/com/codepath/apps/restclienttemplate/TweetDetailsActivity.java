@@ -3,6 +3,7 @@ package com.codepath.apps.restclienttemplate;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -49,6 +51,8 @@ public class TweetDetailsActivity extends AppCompatActivity {
     public static final String TAG = "TweetDetailsActivity";
 
     Tweet tweet;
+    TwitterClient client;
+    int pos;
 
     ImageView ivDetailsImage1;
     ImageView ivDetailsImage2;
@@ -64,20 +68,30 @@ public class TweetDetailsActivity extends AppCompatActivity {
     TextView tvDetailsLikeCount;
     TextView tvDetailsRetweetCount;
 
+    ImageButton ibDetailsLike;
+    ImageButton ibDetailsRetweet;
+    ImageButton ibDetailsReply;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tweet_details);
 
+        // Unwrap tweet passed in through intent and through parceling
         tweet = Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
+        pos = getIntent().getIntExtra("position", 0);
+        client = new TwitterClient(this);
 
+        List<ImageView> imageViewHolder = new ArrayList<>();
+
+        // Find all the views by id, add image views to list
+        // Note to self: use the view library next time!!!
         ivDetailsImage1 = findViewById(R.id.ivDetailsImage1);
         ivDetailsImage2 = findViewById(R.id.ivDetailsImage2);
         ivDetailsImage3 = findViewById(R.id.ivDetailsImage3);
         ivDetailsImage4 = findViewById(R.id.ivDetailsImage4);
 
-        List<ImageView> imageViewHolder = new ArrayList<>();
         imageViewHolder.add(ivDetailsImage1);
         imageViewHolder.add(ivDetailsImage2);
         imageViewHolder.add(ivDetailsImage3);
@@ -85,20 +99,32 @@ public class TweetDetailsActivity extends AppCompatActivity {
 
         ivDetailsProfile = findViewById(R.id.ivDetailsProfile);
 
+        // Load pfp into profile picture image view
         Glide.with(this)
                 .load(tweet.user.publicImageUrl)
                 .circleCrop()
                 .into(ivDetailsProfile);
 
-
         tvDetailsUserAt = findViewById(R.id.tvDetailsUserAt);
         tvDetailsContent = findViewById(R.id.tvDetailsContent);
         tvDetailsUsername = findViewById(R.id.tvDetailsUsername);
         tvDetailsDateTimeSource = findViewById(R.id.tvDetailsDateTimeSource);
-
         tvDetailsUsername.setText(tweet.user.name);
         tvDetailsUserAt.setText(String.format("@%s", tweet.user.screenName));
         tvDetailsContent.setText(tweet.body);
+
+        ibDetailsLike = findViewById(R.id.ibDetailsLike);
+        ibDetailsReply = findViewById(R.id.ibDetailsReply);
+        ibDetailsRetweet = findViewById(R.id.ibDetailsRetweet);
+        ibDetailsLike = findViewById(R.id.ibDetailsLike);
+
+        if (tweet.liked) {
+            ibDetailsLike.setSelected(true);
+        }
+
+        TweetInteractions tweetInteractions = new TweetInteractions(this, ibDetailsLike, ibDetailsRetweet, ibDetailsReply,
+                client, tweet);
+        ibDetailsLike.setOnClickListener(tweetInteractions);
 
         tvDetailsRetweetCount = findViewById(R.id.tvDetailsRetweetCount);
         tvDetailsLikeCount = findViewById(R.id.tvDetailsLikeCount);
@@ -109,7 +135,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
         final ForegroundColorSpan numFCS = new ForegroundColorSpan(Color.rgb(0,0,0));
         final StyleSpan numSS = new StyleSpan(Typeface.BOLD);
 
-        // Set style only for the numbers
+        // Set style only for the numbers, index 0 - end of number of digits of retweet/like count
         rtStyle.setSpan(numFCS, 0, numDigits(tweet.retweetCount), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         rtStyle.setSpan(numSS, 0, numDigits(tweet.retweetCount), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
 
@@ -128,7 +154,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
         sf.setLenient(true);
 
         // Convert to new format by using two different SDFs, get each individual element in an array
-
+        // Need this one for AM/PM in time under tweet (aa)
         SimpleDateFormat sf2 = new SimpleDateFormat("EEE MMM dd h:mm ZZZZZ yyyy aa", Locale.ENGLISH);
         sf2.setTimeZone(TimeZone.getDefault());
         sf2.setLenient(true);
@@ -139,6 +165,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "error decoding timestamp: " + e.toString());
         }
 
+        // Finally put all the information in the timestamp so that it matches regular twitter layout
         try {
             tvDetailsDateTimeSource.setText(String.format("%s %s · %s %s %s · %s", dateTimeInfo[TIME_INDEX],
                     dateTimeInfo[AM_PM_INDEX], dateTimeInfo[MONTH_INDEX], dateTimeInfo[DAY_INDEX],
@@ -148,6 +175,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
             Log.e(TAG, "error setting date and time on tweet: " + e.toString());
         }
 
+        // Needed to resize image layout after this
         for (int i = 0; i < imageViewHolder.size(); i++) {
             imageViewHolder.get(i).requestLayout();
         }
@@ -204,14 +232,24 @@ public class TweetDetailsActivity extends AppCompatActivity {
                 }
                 break;
         }
-
     }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra("tweet", Parcels.wrap(tweet));
+        intent.putExtra("position", pos);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    // Convert dp to px so we can resize image views correctly
     public static int dpToPx(int dp, Context context) {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
 
-    // use only for getting like/rt digit count
+    // use only for getting like/rt number digit count
     public static int numDigits(int n) {
         if (n > 0)
             return (int)(Math.log10(n)+1);

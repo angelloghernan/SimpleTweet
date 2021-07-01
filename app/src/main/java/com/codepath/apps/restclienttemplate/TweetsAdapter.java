@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.codepath.apps.restclienttemplate.models.Tweet;
+import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
 import org.jetbrains.annotations.NotNull;
 import org.parceler.Parcels;
@@ -22,14 +24,21 @@ import org.parceler.Parcels;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.Headers;
+
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder>{
 
+    private static final String TAG = "TweetsAdapter";
+    private final TwitterClient client;
     Context context;
     List<Tweet> tweets;
+    AdapterCallback callback;
 
-    public TweetsAdapter(Context context, List<Tweet> tweets) {
+    public TweetsAdapter(Context context, List<Tweet> tweets, TwitterClient client, AdapterCallback callback) {
         this.context = context;
         this.tweets = tweets;
+        this.client = client;
+        this.callback = callback;
     }
 
     @NonNull
@@ -62,6 +71,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvUserAt;
         TextView tvLikeCount;
         TextView tvRetweetCount;
+        ImageButton ibLike;
+        ImageButton ibReply;
+        ImageButton ibRetweet;
+        TweetInteractions tweetInteractions;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -73,19 +86,24 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvTimePosted = itemView.findViewById(R.id.tvTimePosted);
             tvLikeCount = itemView.findViewById(R.id.tvLikeCount);
             tvRetweetCount = itemView.findViewById(R.id.tvRetweetCount);
-            itemView.setOnClickListener(this);
-
+            ibLike = itemView.findViewById(R.id.ibLike);
+            ibReply = itemView.findViewById(R.id.ibReply);
+            ibRetweet = itemView.findViewById(R.id.ibRetweet);
         }
 
         public void bind(Tweet tweet) {
+            tweetInteractions = new TweetInteractions(context, ibLike, ibRetweet, ibReply, client, tweet);
+            ibLike.setOnClickListener(tweetInteractions);
+            itemView.setOnClickListener(this);
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.name);
             tvTimePosted.setText(tweet.createdAt);
             tvUserAt.setText(String.format("@%s", tweet.user.screenName));
+
             if (tweet.likeCount == 0) {
                 tvLikeCount.setText("");
             } else {
-                tvLikeCount.setText(String.format(Locale.ENGLISH, "%d", tweet.likeCount));
+                updateLikeCount(tvLikeCount, tweet.likeCount);
             }
             if (tweet.retweetCount == 0) {
                 tvRetweetCount.setText("");
@@ -93,10 +111,22 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 tvRetweetCount.setText(String.format(Locale.ENGLISH, "%d", tweet.retweetCount));
             }
 
+            // must set to false first to ensure views are recycling correctly
+            ibLike.setSelected(false);
+
+            // sets to selected if liked, shows as red
+            if (tweet.liked) {
+                ibLike.setSelected(true);
+            }
+
+            // Load profile picture into profile image view
             Glide.with(context)
                     .load(tweet.user.publicImageUrl)
                     .circleCrop()
                     .into(ivProfileImage);
+
+            // The tweet has an image, show the first image
+            // TODO: make other images show up as well just like in details activity -- this will also be rough
             if (tweet.imageUrls.size() != 0) {
                 ivMediaImage.setVisibility(View.VISIBLE);
                 Glide.with(context)
@@ -111,18 +141,24 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         }
 
         @Override
+        // When the view is clicked, run this. Checks what is clicked and goes from there.
+        // If none of the buttons are clicked it will bring up the details activity
         public void onClick(View v) {
             int position = getAdapterPosition();
 
             if (position != RecyclerView.NO_POSITION) {
-                Tweet tweet = tweets.get(position);
-                Intent intent = new Intent(context, TweetDetailsActivity.class);
-                intent.putExtra(Tweet.class.getSimpleName(), Parcels.wrap(tweet));
-                context.startActivity(intent);
+                final Tweet tweet = tweets.get(position);
+                callback.onAdapterSelected(position, tweet);
             }
         }
     }
 
+    // Update like count text view with new like count
+    public void updateLikeCount(TextView likeCountView, int likeCount) {
+        likeCountView.setText(String.format(Locale.ENGLISH, "%d", likeCount));
+    }
+
+    // clear tweet list so that a new set can be fetched
     public void clear() {
         tweets.clear();
         notifyDataSetChanged();
@@ -131,5 +167,9 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     public void addAll(List<Tweet> list) {
         tweets.addAll(list);
         notifyDataSetChanged();
+    }
+
+    public interface AdapterCallback {
+        void onAdapterSelected(int pos, Tweet tweet);
     }
 }

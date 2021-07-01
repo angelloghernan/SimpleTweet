@@ -28,12 +28,13 @@ public class Tweet {
     public int retweetCount;
     public int likeCount;
     public int replyCount;
+    public boolean liked;
+    public long id;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
     private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
-
 
     // empty constructor needed for Parcel
     public Tweet() {}
@@ -45,7 +46,14 @@ public class Tweet {
         tweet.timeStamp = tweet.createdAt;
         tweet.createdAt = tweet.getRelativeTimeAgo(tweet.createdAt);
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.id = jsonObject.getLong("id");
+        if (!jsonObject.isNull("favorited")) {
+            tweet.liked = jsonObject.getBoolean("favorited");
+        } else {
+            tweet.liked = false;
+        }
         tweet.retweetCount = Integer.parseInt(jsonObject.getString("retweet_count"));
+
         if (!jsonObject.isNull("favorite_count")) {
             tweet.likeCount = Integer.parseInt(jsonObject.getString("favorite_count"));
         } else {
