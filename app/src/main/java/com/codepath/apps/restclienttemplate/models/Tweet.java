@@ -2,6 +2,8 @@ package com.codepath.apps.restclienttemplate.models;
 
 import android.util.Log;
 
+import androidx.core.text.HtmlCompat;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,8 +21,13 @@ public class Tweet {
     private static final String TAG = "ClassTweet";
     public String body;
     public String createdAt;
+    public String timeStamp;
+    public String source;
     public User user;
     public List<String> imageUrls;
+    public int retweetCount;
+    public int likeCount;
+    public int replyCount;
 
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
@@ -35,25 +42,35 @@ public class Tweet {
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
         tweet.createdAt = jsonObject.getString("created_at");
+        tweet.timeStamp = tweet.createdAt;
         tweet.createdAt = tweet.getRelativeTimeAgo(tweet.createdAt);
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.retweetCount = Integer.parseInt(jsonObject.getString("retweet_count"));
+        if (!jsonObject.isNull("favorite_count")) {
+            tweet.likeCount = Integer.parseInt(jsonObject.getString("favorite_count"));
+        } else {
+            tweet.likeCount = 0;
+        }
+
+        tweet.source = HtmlCompat.fromHtml(jsonObject.getString("source"), HtmlCompat.FROM_HTML_MODE_LEGACY).toString();
 
         tweet.imageUrls = new ArrayList<>();
 
         // extract photo urls, if any, from json
-        JSONObject entities = jsonObject.getJSONObject("entities");
+        if (jsonObject.has("extended_entities")) {
+            JSONObject entities = jsonObject.getJSONObject("extended_entities");
 
-        // entities only has one image url -- may add multiple photos later so imageUrls is an array instead of just one string
-        // note that many embeds are simply not going to work this way as it only fetches natively uploaded twitter photos, and even then
-        // sometimes these are not counted as embedded uploads (some twitter accounts use t.co manually, which is odd but prevents
-        // it from showing up in the API call)
-        if (entities.has("media")) {
+            // entities only has one image url -- may add multiple photos later so imageUrls is an array instead of just one string
+            // note that many embeds are simply not going to work this way as it only fetches natively uploaded twitter photos, and even then
+            // sometimes these are not counted as embedded uploads (some twitter accounts use t.co manually, which is odd but prevents
+            // it from showing up in the API call)
             JSONArray media = entities.getJSONArray("media");
-                if (media.getJSONObject(0).getString("type").equals("photo")) {
-                    tweet.imageUrls.add(media.getJSONObject(0).getString("media_url_https"));
+            for (int i = 0; i < media.length(); i++) {
+                if (media.getJSONObject(i).getString("type").equals("photo")) {
+                    tweet.imageUrls.add(media.getJSONObject(i).getString("media_url_https"));
                 }
             }
-
+        }
         return tweet;
     }
 

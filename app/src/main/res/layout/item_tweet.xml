@@ -42,7 +42,9 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="2dp"
             android:layout_toEndOf="@+id/ivProfileImage"
-            android:text="Username" />
+            android:text="Username"
+            android:textColor="#000000"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvBody"
@@ -52,7 +54,9 @@
             android:layout_marginStart="5dp"
             android:layout_marginTop="2dp"
             android:layout_toEndOf="@+id/ivProfileImage"
-            android:text="Lorem Ipsum dolor sit amet" />
+            android:text="Lorem Ipsum dolor sit amet"
+            android:textColor="#000000"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/tvTimePosted"
@@ -65,7 +69,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="0dp"
-            android:layout_toEndOf="@+id/tvScreenName"
+            android:layout_toEndOf="@+id/tvUserAt"
             android:foregroundGravity="right"
             android:gravity="right"
             android:text="Time" />
@@ -111,6 +115,17 @@
             android:scaleType="fitStart"
             android:tint="@color/medium_gray_50"
             app:srcCompat="@drawable/ic_vector_retweet_stroke" />
+
+        <TextView
+            android:id="@+id/tvUserAt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/ivProfileImage"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="0dp"
+            android:layout_toEndOf="@+id/tvScreenName"
+            android:text="UserAt"
+            android:textColor="@color/medium_gray" />
 
     </RelativeLayout>
 
