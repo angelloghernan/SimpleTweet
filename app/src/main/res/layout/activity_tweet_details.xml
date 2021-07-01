@@ -142,11 +142,13 @@
         android:layout_height="97dp"
         android:layout_below="@+id/ivDetailsImage2"
         android:layout_alignEnd="@+id/ivDetailsImage2"
-        android:layout_marginStart="1dp"
+        android:layout_marginStart="2dp"
         android:layout_marginTop="1dp"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="5dp"
-        android:layout_toEndOf="@+id/ivDetailsImage3"
+        android:layout_toEndOf="@+id/ivDetailsImage1"
+        android:maxWidth="194dp"
+        android:maxHeight="97dp"
         android:scaleType="centerCrop"
         tools:srcCompat="@tools:sample/avatars" />
 

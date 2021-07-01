@@ -215,6 +215,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
             case 3:
                 ivDetailsImage3.setVisibility(View.GONE);
                 ivDetailsImage1.getLayoutParams().height = dpToPx(ORIGINAL_IV_HEIGHT * 2 + IV_SEPARATE_MARGIN, this);
+                ivDetailsImage4.getLayoutParams().width = dpToPx(ORIGINAL_IV_WIDTH, this);
                 Glide.with(this)
                         .load(tweet.imageUrls.get(0))
                         .into(ivDetailsImage1);
