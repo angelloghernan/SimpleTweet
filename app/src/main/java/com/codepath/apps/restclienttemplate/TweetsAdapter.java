@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.parceler.Parcels;
 
 import java.util.List;
+import java.util.Locale;
 
 public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder>{
 
@@ -59,6 +60,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         TextView tvScreenName;
         TextView tvTimePosted;
         TextView tvUserAt;
+        TextView tvLikeCount;
+        TextView tvRetweetCount;
 
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
@@ -68,6 +71,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvUserAt = itemView.findViewById(R.id.tvUserAt);
             tvScreenName = itemView.findViewById(R.id.tvScreenName);
             tvTimePosted = itemView.findViewById(R.id.tvTimePosted);
+            tvLikeCount = itemView.findViewById(R.id.tvLikeCount);
+            tvRetweetCount = itemView.findViewById(R.id.tvRetweetCount);
             itemView.setOnClickListener(this);
 
         }
@@ -76,7 +81,18 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.name);
             tvTimePosted.setText(tweet.createdAt);
-            tvUserAt.setText("@" + tweet.user.screenName);
+            tvUserAt.setText(String.format("@%s", tweet.user.screenName));
+            if (tweet.likeCount == 0) {
+                tvLikeCount.setText("");
+            } else {
+                tvLikeCount.setText(String.format(Locale.ENGLISH, "%d", tweet.likeCount));
+            }
+            if (tweet.retweetCount == 0) {
+                tvRetweetCount.setText("");
+            } else {
+                tvRetweetCount.setText(String.format(Locale.ENGLISH, "%d", tweet.retweetCount));
+            }
+
             Glide.with(context)
                     .load(tweet.user.publicImageUrl)
                     .circleCrop()

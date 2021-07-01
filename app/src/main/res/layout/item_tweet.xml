@@ -76,8 +76,8 @@
 
         <ImageButton
             android:id="@+id/ibReply"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
             android:layout_below="@+id/ivMediaImage"
             android:layout_alignStart="@+id/ivMediaImage"
             android:layout_marginTop="10dp"
@@ -85,17 +85,19 @@
             android:background="@null"
             android:backgroundTint="#00FFFFFF"
             android:scaleType="fitStart"
-            android:tint="@color/medium_gray_50"
-            app:srcCompat="@drawable/twitter_reply" />
+            android:tint="@color/medium_gray"
+            app:srcCompat="@android:drawable/sym_action_chat" />
 
         <ImageButton
             android:id="@+id/ibLike"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
             android:layout_alignTop="@+id/ibReply"
             android:layout_alignEnd="@+id/ivMediaImage"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:layout_marginEnd="0dp"
+            android:layout_toEndOf="@+id/ibRetweet"
             android:background="@null"
             android:backgroundTint="#00FFFFFF"
             android:scaleType="fitStart"
@@ -104,12 +106,12 @@
 
         <ImageButton
             android:id="@+id/ibRetweet"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_alignStart="@+id/ivMediaImage"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
             android:layout_alignTop="@+id/ibReply"
-            android:layout_marginStart="150dp"
+            android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
+            android:layout_toEndOf="@+id/ibReply"
             android:background="@null"
             android:backgroundTint="#00FFFFFF"
             android:scaleType="fitStart"
@@ -126,6 +128,26 @@
             android:layout_toEndOf="@+id/tvScreenName"
             android:text="UserAt"
             android:textColor="@color/medium_gray" />
+
+        <TextView
+            android:id="@+id/tvRetweetCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/ibRetweet"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="0dp"
+            android:layout_toEndOf="@+id/ibReply"
+            android:text="x" />
+
+        <TextView
+            android:id="@+id/tvLikeCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/ibLike"
+            android:layout_alignTop="@+id/ibRetweet"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="0dp"
+            android:text="x" />
 
     </RelativeLayout>
 
