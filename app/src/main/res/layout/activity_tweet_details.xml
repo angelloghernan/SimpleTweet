@@ -196,8 +196,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="10dp"
         android:text="x Retweets"
-        android:textColor="@color/medium_gray"
-        android:textStyle="bold" />
+        android:textColor="@color/medium_gray" />
 
     <TextView
         android:id="@+id/tvDetailsLikeCount"
@@ -208,8 +207,7 @@
         android:layout_marginTop="10dp"
         android:layout_toEndOf="@+id/tvDetailsRetweetCount"
         android:text="x Likes"
-        android:textColor="@color/medium_gray"
-        android:textStyle="bold" />
+        android:textColor="@color/medium_gray" />
 
     <View
         android:id="@+id/vTweetDivider4"

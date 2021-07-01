@@ -10,10 +10,15 @@ import android.widget.TextView;
 import com.codepath.apps.restclienttemplate.models.Tweet;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 import okhttp3.Headers;
 
+// This class is needed only so that we do not have to write the same code every single time
+// for every like, retweet, and reply action (ie details activity buttons and timeline buttons).
+// This will be extra useful is we decide to show full threads later on.
 public class TweetInteractions implements View.OnClickListener {
     ImageButton ibRetweetButton;
     ImageButton ibLikeButton;
@@ -21,6 +26,8 @@ public class TweetInteractions implements View.OnClickListener {
     TwitterClient client;
     Context context;
     Tweet tweet;
+    TextView likeCounter;
+    TextView retweetCounter;
 
     public static final String TAG = "TweetInteractions";
 
@@ -32,6 +39,8 @@ public class TweetInteractions implements View.OnClickListener {
         this.ibReplyButton = replyButton;
         this.context = context;
         this.tweet = tweet;
+        this.likeCounter = likeCounter;
+        this.retweetCounter = retweetCounter;
     }
 
     @Override
@@ -108,8 +117,4 @@ public class TweetInteractions implements View.OnClickListener {
         }
     }
 
-    // used to update retweet and like numbers
-    public void updateCounterView(TextView view, int num) {
-        view.setText(String.format(Locale.ENGLISH, "%d", num));
-    }
 }

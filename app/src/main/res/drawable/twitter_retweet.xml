@@ -4,7 +4,7 @@
         android:state_selected="true"
         android:drawable="@drawable/ic_vector_retweet"
         />
-    <item android:state_pressed="true" android:drawable="@drawable/ic_vector_heart"/>
+    <item android:state_pressed="true" android:drawable="@drawable/ic_vector_retweet"/>
     <item
         android:drawable="@drawable/ic_vector_retweet_stroke"
         />

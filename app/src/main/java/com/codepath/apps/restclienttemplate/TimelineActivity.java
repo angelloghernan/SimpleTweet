@@ -101,7 +101,7 @@ public class TimelineActivity extends AppCompatActivity {
         }
     };
 
-    // On compose intent finish
+    // On compose intent finish or details finish (return to timeline)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable @org.jetbrains.annotations.Nullable Intent data) {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
@@ -114,6 +114,7 @@ public class TimelineActivity extends AppCompatActivity {
             rvTweets.smoothScrollToPosition(0);
         } if (requestCode == DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
             assert data != null;
+            // Get the tweet info from the details activity and let the adapter know an update has occurred
             Tweet tweet = Parcels.unwrap(data.getParcelableExtra("tweet"));
             int pos = data.getIntExtra("position", 0);
             tweets.set(pos, tweet);
@@ -123,7 +124,7 @@ public class TimelineActivity extends AppCompatActivity {
     }
 
 
-
+    // Get all the tweets from the client GET into an array and let the adapter know the data set has updated
     private void populateHomeTimeline() {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override
@@ -151,6 +152,7 @@ public class TimelineActivity extends AppCompatActivity {
         finish();
     }
 
+    // get tweets from timeline using the client GET, makes sure to stop the refreshing animation when done
     public void fetchTimelineasync(int page) {
         client.getHomeTimeline(new JsonHttpResponseHandler() {
             @Override

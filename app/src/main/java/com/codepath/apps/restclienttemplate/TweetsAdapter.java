@@ -44,12 +44,14 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
     @NonNull
     @NotNull
     @Override
+    // attaches the layout to the view and returns it
     public ViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_tweet, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
+    // get the tweet and attach the correct info to the view through bind
     public void onBindViewHolder(@NonNull @NotNull ViewHolder holder, int position) {
         // Get data at position
         Tweet tweet = tweets.get(position);
@@ -76,6 +78,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         ImageButton ibRetweet;
         TweetInteractions tweetInteractions;
 
+        // Constructor retrieves every view and attaches it to the variable in here.
         public ViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
             ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
@@ -91,8 +94,10 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             ibRetweet = itemView.findViewById(R.id.ibRetweet);
         }
 
+        // bind goes through every tweet and attaches all the correct info (username, profile picture, tweet content, etc)
         public void bind(Tweet tweet) {
-            tweetInteractions = new TweetInteractions(context, ibLike, ibRetweet, ibReply, client, tweet);
+            tweetInteractions = new TweetInteractions(context, ibLike, ibRetweet, ibReply,
+                    client, tweet);
             ibLike.setOnClickListener(tweetInteractions);
             ibRetweet.setOnClickListener(tweetInteractions);
             itemView.setOnClickListener(this);
@@ -104,7 +109,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             if (tweet.likeCount == 0) {
                 tvLikeCount.setText("");
             } else {
-                tweetInteractions.updateCounterView(tvLikeCount, tweet.likeCount);
+                tvLikeCount.setText(String.format(Locale.ENGLISH, "%d", tweet.likeCount));
             }
             if (tweet.retweetCount == 0) {
                 tvRetweetCount.setText("");

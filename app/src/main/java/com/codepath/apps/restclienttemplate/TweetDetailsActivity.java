@@ -81,9 +81,7 @@ public class TweetDetailsActivity extends AppCompatActivity {
         // Unwrap tweet passed in through intent and through parceling
         tweet = Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
         pos = getIntent().getIntExtra("position", 0);
-        // note: if I could, I would have the same client throughout. But I'm not sure how
-        // since the client class is unparcelable, and I do not have much time left.
-        client = new TwitterClient(this);
+        client = TwitterApp.getRestClient(this);
 
         List<ImageView> imageViewHolder = new ArrayList<>();
 
@@ -125,13 +123,17 @@ public class TweetDetailsActivity extends AppCompatActivity {
         }
         ibDetailsRetweet.setSelected(tweet.retweeted);
 
-        TweetInteractions tweetInteractions = new TweetInteractions(this, ibDetailsLike, ibDetailsRetweet, ibDetailsReply,
-                client, tweet);
-        ibDetailsLike.setOnClickListener(tweetInteractions);
-        ibDetailsRetweet.setOnClickListener(tweetInteractions);
+
+
 
         tvDetailsRetweetCount = findViewById(R.id.tvDetailsRetweetCount);
         tvDetailsLikeCount = findViewById(R.id.tvDetailsLikeCount);
+
+        TweetInteractions tweetInteractions = new TweetInteractions(this, ibDetailsLike, ibDetailsRetweet, ibDetailsReply,
+                client, tweet);
+
+        ibDetailsLike.setOnClickListener(tweetInteractions);
+        ibDetailsRetweet.setOnClickListener(tweetInteractions);
 
         // Make style for retweet count and like count (bold number, unbolded word)
         SpannableStringBuilder rtStyle = new SpannableStringBuilder(String.format("%s Retweets", Integer.toString(tweet.retweetCount)));
@@ -238,6 +240,8 @@ public class TweetDetailsActivity extends AppCompatActivity {
         }
     }
 
+    // When back is pressed, send back the tweet information and position through intent so that the information
+    // (retweet, like status) can update
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
