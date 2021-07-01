@@ -94,6 +94,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         public void bind(Tweet tweet) {
             tweetInteractions = new TweetInteractions(context, ibLike, ibRetweet, ibReply, client, tweet);
             ibLike.setOnClickListener(tweetInteractions);
+            ibRetweet.setOnClickListener(tweetInteractions);
             itemView.setOnClickListener(this);
             tvBody.setText(tweet.body);
             tvScreenName.setText(tweet.user.name);
@@ -103,7 +104,7 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             if (tweet.likeCount == 0) {
                 tvLikeCount.setText("");
             } else {
-                updateLikeCount(tvLikeCount, tweet.likeCount);
+                tweetInteractions.updateCounterView(tvLikeCount, tweet.likeCount);
             }
             if (tweet.retweetCount == 0) {
                 tvRetweetCount.setText("");
@@ -111,13 +112,8 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
                 tvRetweetCount.setText(String.format(Locale.ENGLISH, "%d", tweet.retweetCount));
             }
 
-            // must set to false first to ensure views are recycling correctly
-            ibLike.setSelected(false);
-
-            // sets to selected if liked, shows as red
-            if (tweet.liked) {
-                ibLike.setSelected(true);
-            }
+            ibLike.setSelected(tweet.liked);
+            ibRetweet.setSelected(tweet.retweeted);
 
             // Load profile picture into profile image view
             Glide.with(context)
@@ -153,10 +149,6 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
         }
     }
 
-    // Update like count text view with new like count
-    public void updateLikeCount(TextView likeCountView, int likeCount) {
-        likeCountView.setText(String.format(Locale.ENGLISH, "%d", likeCount));
-    }
 
     // clear tweet list so that a new set can be fetched
     public void clear() {

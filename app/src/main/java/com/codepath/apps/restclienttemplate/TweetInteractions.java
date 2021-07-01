@@ -49,7 +49,7 @@ public class TweetInteractions implements View.OnClickListener {
 
                     @Override
                     public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                        Log.e(TAG, response.toString());
+                        Log.e(TAG, response);
                         Log.e(TAG, "onFailure to like tweet: " + throwable.toString());
                     }
                 });
@@ -66,14 +66,50 @@ public class TweetInteractions implements View.OnClickListener {
 
                 @Override
                 public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
-                    Log.e(TAG, response.toString());
+                    Log.e(TAG, response);
                     Log.e(TAG, "onFailure to like tweet: " + throwable.toString());
                 }
             });
         }
+        else if (v.getId() == R.id.ibRetweet || v.getId() == R.id.ibDetailsRetweet) {
+            if (tweet.retweeted) {
+                client.unretweetTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "unretweet successful");
+                        ibRetweetButton.setSelected(false);
+                        tweet.retweetCount -= 1;
+                        tweet.retweeted = false;
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "error unretweeting: " + throwable.toString());
+                        Log.e(TAG, response);
+                    }
+                });
+            } else {
+                client.retweetTweet(tweet.id, new JsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Headers headers, JSON json) {
+                        Log.i(TAG, "retweet successful");
+                        ibRetweetButton.setSelected(true);
+                        tweet.retweetCount += 1;
+                        tweet.retweeted = true;
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Headers headers, String response, Throwable throwable) {
+                        Log.e(TAG, "error retweeting: " + throwable.toString());
+                        Log.e(TAG, response);
+                    }
+                });
+            }
+        }
     }
 
-    public void updateLikeCount(TextView likeCountView, int likeCount) {
-        likeCountView.setText(String.format(Locale.ENGLISH, "%d", likeCount));
+    // used to update retweet and like numbers
+    public void updateCounterView(TextView view, int num) {
+        view.setText(String.format(Locale.ENGLISH, "%d", num));
     }
 }

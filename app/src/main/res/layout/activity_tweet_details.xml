@@ -33,8 +33,8 @@
         android:background="@null"
         android:backgroundTint="#00FFFFFF"
         android:scaleType="fitCenter"
-        android:tint="@color/medium_gray"
-        app:srcCompat="@drawable/ic_vector_retweet_stroke" />
+        android:tint="@color/retweet_selector"
+        app:srcCompat="@drawable/twitter_retweet" />
 
     <ImageButton
         android:id="@+id/ibDetailsLike"

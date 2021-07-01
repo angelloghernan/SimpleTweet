@@ -81,6 +81,8 @@ public class TweetDetailsActivity extends AppCompatActivity {
         // Unwrap tweet passed in through intent and through parceling
         tweet = Parcels.unwrap(getIntent().getParcelableExtra(Tweet.class.getSimpleName()));
         pos = getIntent().getIntExtra("position", 0);
+        // note: if I could, I would have the same client throughout. But I'm not sure how
+        // since the client class is unparcelable, and I do not have much time left.
         client = new TwitterClient(this);
 
         List<ImageView> imageViewHolder = new ArrayList<>();
@@ -121,10 +123,12 @@ public class TweetDetailsActivity extends AppCompatActivity {
         if (tweet.liked) {
             ibDetailsLike.setSelected(true);
         }
+        ibDetailsRetweet.setSelected(tweet.retweeted);
 
         TweetInteractions tweetInteractions = new TweetInteractions(this, ibDetailsLike, ibDetailsRetweet, ibDetailsReply,
                 client, tweet);
         ibDetailsLike.setOnClickListener(tweetInteractions);
+        ibDetailsRetweet.setOnClickListener(tweetInteractions);
 
         tvDetailsRetweetCount = findViewById(R.id.tvDetailsRetweetCount);
         tvDetailsLikeCount = findViewById(R.id.tvDetailsLikeCount);

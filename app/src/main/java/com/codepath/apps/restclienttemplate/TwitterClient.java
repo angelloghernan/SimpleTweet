@@ -26,6 +26,7 @@ import org.parceler.ParcelConstructor;
  * NOTE: You may want to rename this object based on the service i.e TwitterClient or FlickrClient
  * 
  */
+
 public class TwitterClient extends OAuthBaseClient {
 	public static final BaseApi REST_API_INSTANCE = TwitterApi.instance();
 	public static final String REST_URL = "https://api.twitter.com/1.1";
@@ -80,7 +81,17 @@ public class TwitterClient extends OAuthBaseClient {
 	}
 
 	public void retweetTweet(long tweetId, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/retweet.json");
+		RequestParams params = new RequestParams();
+		params.put("id", tweetId);
+		client.post(apiUrl, params, "", handler);
+	}
 
+	public void unretweetTweet(long tweetId, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/unretweet.json");
+		RequestParams params = new RequestParams();
+		params.put("id", tweetId);
+		client.post(apiUrl, params, "", handler);
 	}
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
 	 * 	  i.e getApiUrl("statuses/home_timeline.json");

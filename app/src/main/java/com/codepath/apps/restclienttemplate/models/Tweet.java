@@ -27,8 +27,8 @@ public class Tweet {
     public List<String> imageUrls;
     public int retweetCount;
     public int likeCount;
-    public int replyCount;
     public boolean liked;
+    public boolean retweeted;
     public long id;
 
     private static final int SECOND_MILLIS = 1000;
@@ -47,13 +47,17 @@ public class Tweet {
         tweet.createdAt = tweet.getRelativeTimeAgo(tweet.createdAt);
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.id = jsonObject.getLong("id");
+        // "favorited" is nullable, so we must check if it is null before attempting to assign it to tweet.liked
         if (!jsonObject.isNull("favorited")) {
             tweet.liked = jsonObject.getBoolean("favorited");
         } else {
             tweet.liked = false;
         }
+        // on the other hand, "retweeted" is not nullable.
+        tweet.retweeted = jsonObject.getBoolean("retweeted");
         tweet.retweetCount = Integer.parseInt(jsonObject.getString("retweet_count"));
 
+        // and favorite_count is nullable
         if (!jsonObject.isNull("favorite_count")) {
             tweet.likeCount = Integer.parseInt(jsonObject.getString("favorite_count"));
         } else {
