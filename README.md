@@ -52,7 +52,7 @@ GIF created with [Giphy Capture](https://giphy.com/apps/giphycapture)
 
 ## Notes
 
-N/A
+Note that there wasn't sufficient time in the short gif walkthrough to show the refresh and max char limit features fully, but they work correctly.
 
 ## Open-source libraries used
 
